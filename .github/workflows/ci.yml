@@ -1,0 +1,34 @@
+name: ci
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -r requirements-dev.txt
+      - run: flake8 --max-line-length=120 server client demo tests
+      - run: pytest -q
+
+  smoke:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      POSTGRES_PASSWORD: ci-only-password
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up -d --build --wait
+      - name: register a target and wait for the first check
+        run: |
+          curl -fsS -X POST localhost:8000/api/targets -H 'Content-Type: application/json' \
+            -d '{"name":"billing","url":"http://billing:9101/","interval_seconds":2}'
+          for i in $(seq 1 20); do
+            state=$(curl -fsS localhost:8000/api/status | python3 -c "import sys,json; print(json.load(sys.stdin)[0]['state'])")
+            [ "$state" = "UP" ] && exit 0
+            sleep 1
+          done
+          echo "target never became UP"; exit 1
+      - if: always()
+        run: docker compose logs server && docker compose down -v

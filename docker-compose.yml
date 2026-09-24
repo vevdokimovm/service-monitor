@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: monitor
+      POSTGRES_DB: monitor
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U monitor -d monitor"]
+      interval: 5s
+      retries: 10
+
+  server:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+asyncpg://monitor:${POSTGRES_PASSWORD}@db:5432/monitor
+    ports: ["8000:8000"]
+    depends_on:
+      db: {condition: service_healthy}
+
+  billing:
+    build: .
+    command: ["python", "demo/demo_service.py", "--port", "9101", "--name", "billing"]
+    ports: ["9101:9101"]
+
+  catalog:
+    build: .
+    command: ["python", "demo/demo_service.py", "--port", "9102", "--name", "catalog"]
+    ports: ["9102:9102"]
+
+volumes:
+  pgdata:
