@@ -35,3 +35,19 @@ async def test_actions_are_logged(client):
     await client.delete(f"/api/targets/{tid}")
     actions = [a["action"] for a in (await client.get("/api/audit")).json()]
     assert actions == ["target_deleted", "target_created"]
+
+
+async def test_token_required_when_configured(client):
+    from app.core.config import settings
+
+    settings.API_TOKEN = "s3cret"
+    try:
+        assert (await client.get("/api/targets")).status_code == 401
+        assert (await client.get("/api/targets", headers={"X-API-Token": "s3cret"})).status_code == 200
+        assert (await client.get("/api/health")).status_code == 200
+    finally:
+        settings.API_TOKEN = ""
+
+
+async def test_limit_is_bounded(client):
+    assert (await client.get("/api/audit?limit=100000")).status_code == 422

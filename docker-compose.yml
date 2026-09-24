@@ -15,6 +15,7 @@ services:
     build: .
     environment:
       DATABASE_URL: postgresql+asyncpg://monitor:${POSTGRES_PASSWORD}@db:5432/monitor
+      API_TOKEN: ${API_TOKEN:-}
     ports: ["8000:8000"]
     depends_on:
       db: {condition: service_healthy}
@@ -23,11 +24,19 @@ services:
     build: .
     command: ["python", "demo/demo_service.py", "--port", "9101", "--name", "billing"]
     ports: ["9101:9101"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9101/')"]
+      interval: 10s
+      retries: 3
 
   catalog:
     build: .
     command: ["python", "demo/demo_service.py", "--port", "9102", "--name", "catalog"]
     ports: ["9102:9102"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9102/')"]
+      interval: 10s
+      retries: 3
 
 volumes:
   pgdata:

@@ -5,6 +5,7 @@ usage: python monitor_client.py [--server http://127.0.0.1:8000]
 
 import argparse
 import json
+import os
 import tkinter as tk
 import urllib.error
 import urllib.request
@@ -17,13 +18,15 @@ STATE_COLORS = {"UP": "#1b7f3b", "DOWN": "#c62828", "PENDING": "#8a6d00"}
 class ApiClient:
     """Thin JSON-over-HTTP wrapper around the server API."""
 
-    def __init__(self, base_url: str) -> None:
+    def __init__(self, base_url: str, token: str = "") -> None:
         self.base = base_url.rstrip("/") + "/api"
+        self.headers = {"Content-Type": "application/json"}
+        if token:
+            self.headers["X-API-Token"] = token
 
     def _call(self, method: str, path: str, payload: dict | None = None):
         data = json.dumps(payload).encode() if payload is not None else None
-        req = urllib.request.Request(self.base + path, data=data, method=method,
-                                     headers={"Content-Type": "application/json"})
+        req = urllib.request.Request(self.base + path, data=data, method=method, headers=self.headers)
         try:
             with urllib.request.urlopen(req, timeout=5) as resp:
                 body = resp.read()
@@ -147,8 +150,10 @@ class MonitorApp(tk.Tk):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--server", default="http://127.0.0.1:8000")
+    parser.add_argument("--token", default=os.environ.get("MONITOR_API_TOKEN", ""),
+                        help="value of X-API-Token if the server requires it")
     args = parser.parse_args()
-    MonitorApp(ApiClient(args.server)).mainloop()
+    MonitorApp(ApiClient(args.server, args.token)).mainloop()
 
 
 if __name__ == "__main__":

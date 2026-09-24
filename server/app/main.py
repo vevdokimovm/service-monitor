@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.api.routes import router
+from app.api.routes import health_router, router
 from app.core.database import SessionLocal, init_db
 from app.core.exceptions import DuplicateTargetError, TargetNotFoundError
 from app.services.monitor_service import Scheduler
@@ -28,6 +28,7 @@ def create_app(run_scheduler: bool = True) -> FastAPI:
     """Application factory; tests switch the background loop off."""
     app = FastAPI(title="Service Monitor", version="1.0.0", lifespan=lifespan)
     app.state.run_scheduler = run_scheduler
+    app.include_router(health_router)
     app.include_router(router)
 
     @app.exception_handler(TargetNotFoundError)
