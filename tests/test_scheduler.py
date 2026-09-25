@@ -1,4 +1,4 @@
-"""Scheduler and prober against a fake HTTP transport — no network needed."""
+"""Планировщик и проверка на поддельном HTTP-транспорте, сеть не нужна."""
 
 import httpx
 
@@ -23,7 +23,7 @@ async def test_tick_records_up_down_and_errors(app_env, client):
         checked = await Scheduler(database.SessionLocal).tick(Prober(http))
         again = await Scheduler(database.SessionLocal).tick(Prober(http))
     states = {r["name"]: r["state"] for r in (await client.get("/api/status")).json()}
-    assert checked == 3 and again == 0          # second tick: interval not elapsed yet
+    assert checked == 3 and again == 0          # второй шаг: интервал ещё не прошёл
     assert states == {"ok": "UP", "broken": "DOWN", "dead": "DOWN"}
     [dead] = [r for r in (await client.get("/api/targets/3/history")).json()]
     assert dead["error"] == "ConnectError"

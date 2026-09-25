@@ -1,4 +1,4 @@
-"""FastAPI application: routes, exception mapping and the background scheduler."""
+"""Приложение FastAPI: маршруты, обработка исключений и фоновый планировщик."""
 
 import logging
 from contextlib import asynccontextmanager
@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
 
 
 def create_app(run_scheduler: bool = True) -> FastAPI:
-    """Application factory; tests switch the background loop off."""
+    """Создаёт приложение; в тестах фоновый цикл выключается."""
     app = FastAPI(title="Service Monitor", version="1.0.0", lifespan=lifespan)
     app.state.run_scheduler = run_scheduler
     app.include_router(health_router)

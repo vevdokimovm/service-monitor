@@ -1,6 +1,6 @@
-"""Desktop client of the Service Monitor (Tkinter). All logic lives on the server; the client only calls the API.
+"""Настольный клиент мониторинга на Tkinter. Вся логика на сервере, клиент только вызывает API.
 
-usage: python monitor_client.py [--server http://127.0.0.1:8000]
+запуск: python monitor_client.py [--server http://127.0.0.1:8000]
 """
 
 import argparse
@@ -16,7 +16,7 @@ STATE_COLORS = {"UP": "#1b7f3b", "DOWN": "#c62828", "PENDING": "#8a6d00"}
 
 
 class ApiClient:
-    """Thin JSON-over-HTTP wrapper around the server API."""
+    """Обёртка над API сервера: запросы и ответы в JSON."""
 
     def __init__(self, base_url: str, token: str = "") -> None:
         self.base = base_url.rstrip("/") + "/api"
@@ -49,7 +49,7 @@ class ApiClient:
 
 
 class MonitorApp(tk.Tk):
-    """Main window: status table, add/delete form, check history of the selected target."""
+    """Главное окно: таблица состояния, форма добавления и удаления, история проверок выбранного сервиса."""
 
     def __init__(self, api: ApiClient) -> None:
         super().__init__()
@@ -91,7 +91,7 @@ class MonitorApp(tk.Tk):
         self.status_bar.pack(fill="x", padx=10, pady=(0, 8))
 
     def refresh(self) -> None:
-        """Reload the status table; reschedules itself."""
+        """Обновляет таблицу состояния и сам ставит следующее обновление."""
         try:
             rows = self.api.status()
             selected = self.table.selection()

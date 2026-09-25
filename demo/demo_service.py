@@ -1,7 +1,7 @@
-"""Local demo service to monitor: answers 200, or 503 / slow when told to.
+"""Локальный тестовый сервис для мониторинга: отвечает 200, а по команде 503 или медленно.
 
-usage: python demo_service.py --port 9101 [--name billing]
-control: GET /toggle switches healthy <-> broken, GET /slow makes answers take 1.5 s
+запуск: python demo_service.py --port 9101 [--name billing]
+управление: GET /toggle переключает рабочий/сломанный, GET /slow — ответы по 1,5 с
 """
 
 import argparse
@@ -10,11 +10,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
 class DemoHandler(BaseHTTPRequestHandler):
-    """Tiny HTTP service with switchable failure modes."""
+    """Простой HTTP-сервис, который можно переключать в режим сбоя."""
 
     state = {"broken": False, "slow": False, "name": "demo"}
 
-    def do_GET(self) -> None:  # noqa: N802 — name fixed by http.server
+    def do_GET(self) -> None:  # noqa: N802 — имя метода задаёт http.server
         if self.path == "/toggle":
             self.state["broken"] = not self.state["broken"]
             return self._reply(200, f"broken={self.state['broken']}")

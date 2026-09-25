@@ -1,4 +1,4 @@
-"""Pydantic schemas: separate input and output models."""
+"""Схемы Pydantic: отдельные модели для входа и выхода."""
 
 from datetime import datetime
 
@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 
 class TargetCreate(BaseModel):
-    """Payload for registering a new target."""
+    """Данные для добавления нового сервиса."""
 
     name: str = Field(min_length=1, max_length=100)
     url: HttpUrl
@@ -15,7 +15,7 @@ class TargetCreate(BaseModel):
 
 
 class TargetOut(BaseModel):
-    """Target as returned by the API."""
+    """Сервис в ответе API."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -28,7 +28,7 @@ class TargetOut(BaseModel):
 
 
 class CheckOut(BaseModel):
-    """One check result."""
+    """Результат одной проверки."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -40,7 +40,7 @@ class CheckOut(BaseModel):
 
 
 class TargetStatus(BaseModel):
-    """Aggregated state of a target for the dashboard."""
+    """Сводное состояние сервиса для таблицы в клиенте."""
 
     id: int
     name: str
@@ -53,7 +53,7 @@ class TargetStatus(BaseModel):
 
 
 class AuditOut(BaseModel):
-    """Audit log entry."""
+    """Запись журнала действий."""
 
     model_config = ConfigDict(from_attributes=True)
 

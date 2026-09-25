@@ -1,4 +1,4 @@
-"""Business logic: target management, probing and status aggregation."""
+"""Бизнес-логика: управление сервисами, проверки и сводка состояния."""
 
 import asyncio
 import logging
@@ -18,13 +18,13 @@ logger = logging.getLogger(__name__)
 
 
 class MonitorService:
-    """Operations requested by clients through the API."""
+    """Операции, которые клиент вызывает через API."""
 
     def __init__(self, session: AsyncSession) -> None:
         self.repo = MonitorRepository(session)
 
     async def create_target(self, data: TargetCreate, client_ip: str) -> Target:
-        """Register a target; names are unique."""
+        """Добавляет сервис; имена не повторяются."""
         if await self.repo.get_target_by_name(data.name):
             raise DuplicateTargetError(data.name)
         target = await self.repo.add_target(Target(
@@ -34,7 +34,7 @@ class MonitorService:
         return target
 
     async def delete_target(self, target_id: int, client_ip: str) -> None:
-        """Remove a target together with its history."""
+        """Удаляет сервис вместе с историей."""
         target = await self._get(target_id)
         await self.repo.delete_target(target)
         await self.repo.log(client_ip, "target_deleted", target.name)
@@ -43,7 +43,7 @@ class MonitorService:
         return await self.repo.list_targets()
 
     async def status(self) -> list[TargetStatus]:
-        """Dashboard view: last state, latency and uptime of every target."""
+        """Для таблицы в клиенте: последнее состояние, задержка и аптайм каждого сервиса."""
         out = []
         for target in await self.repo.list_targets():
             last = await self.repo.history(target.id, 1)
@@ -70,7 +70,7 @@ class MonitorService:
 
 
 class Prober:
-    """Performs one HTTP check of a target."""
+    """Выполняет одну HTTP-проверку сервиса."""
 
     def __init__(self, client: httpx.AsyncClient) -> None:
         self.client = client
@@ -90,7 +90,7 @@ class Prober:
 
 
 class Scheduler:
-    """Background loop: every tick probes the targets whose interval has elapsed."""
+    """Фоновый цикл: на каждом шаге проверяет сервисы, у которых подошёл интервал."""
 
     def __init__(self, session_factory: async_sessionmaker[AsyncSession]) -> None:
         self.session_factory = session_factory
@@ -108,7 +108,7 @@ class Scheduler:
                 pass
 
     async def tick(self, prober: Prober) -> int:
-        """Probe all due targets once; return how many were checked."""
+        """Один проход по сервисам, которым пора; возвращает, сколько проверено."""
         async with self.session_factory() as session:
             repo = MonitorRepository(session)
             targets = await repo.list_targets()
@@ -129,11 +129,11 @@ class Scheduler:
             while True:
                 try:
                     await self.tick(prober)
-                except Exception:  # the loop must survive a DB hiccup; the error is logged
+                except Exception:  # цикл не должен падать из-за сбоя БД, ошибка пишется в лог
                     logger.exception("scheduler tick failed")
                 await asyncio.sleep(settings.POLL_TICK_SECONDS)
 
 
 def _aware(moment: datetime) -> datetime:
-    """SQLite returns naive datetimes; treat them as UTC."""
+    """SQLite отдаёт время без часового пояса, считаем его UTC."""
     return moment if moment.tzinfo else moment.replace(tzinfo=timezone.utc)

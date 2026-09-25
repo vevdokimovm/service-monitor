@@ -1,46 +1,48 @@
 # Service Monitor
 
-Monitoring of HTTP services: a FastAPI server probes registered endpoints on a schedule, stores every check in PostgreSQL
-and serves an API; a desktop client (Tkinter) shows the state, uptime and history of each target.
+ДЗ по «Разработке приложений на Python» (МИСИС, осень 2026), Евдокимов В. М., МИВТ-26-5-2.
 
-## Quick start (Docker)
+Мониторинг доступности веб-сервисов. Сервер на FastAPI по расписанию опрашивает добавленные адреса
+и сохраняет каждую проверку в PostgreSQL. Клиент на Tkinter показывает, какой сервис жив, аптайм и историю проверок.
+
+## Как запустить
 
 ```bash
-cp .env.example .env                     # set POSTGRES_PASSWORD (and API_TOKEN if the API must be closed)
-docker compose up -d --build --wait      # db, server :8000, demo services billing :9101 and catalog :9102
-python client/monitor_client.py          # desktop client; --server URL, --token TOKEN
+cp .env.example .env                  # вписать POSTGRES_PASSWORD (и API_TOKEN, если нужен закрытый API)
+docker compose up -d --build --wait   # поднимет базу, сервер на :8000 и два тестовых сервиса (:9101, :9102)
+python client/monitor_client.py       # клиент, можно указать --server URL и --token TOKEN
 ```
 
-Register targets from the client form or via API:
+Добавить сервис можно из формы в клиенте или через API:
 
 ```bash
 curl -X POST localhost:8000/api/targets -H 'Content-Type: application/json' \
   -d '{"name":"billing","url":"http://billing:9101/","interval_seconds":5}'
-curl localhost:9101/toggle               # make a demo service answer 503 and watch it go DOWN
+curl localhost:9101/toggle            # тестовый сервис начнёт отвечать 503, в клиенте он станет DOWN
 ```
 
 ## API
 
-| Method | Path | What |
-|---|---|---|
-| GET | `/api/health` | liveness, no token |
-| GET / POST | `/api/targets` | list / register a target (409 on duplicate name, 422 on invalid URL) |
-| DELETE | `/api/targets/{id}` | remove a target with its history |
-| GET | `/api/status` | state UP/DOWN/PENDING, last latency, uptime % per target |
-| GET | `/api/targets/{id}/history?limit=N` | last N checks (1–200) |
-| GET | `/api/audit?limit=N` | work log: who created/deleted what |
+- `GET /api/health` — сервер жив (без токена);
+- `GET /api/targets`, `POST /api/targets` — список сервисов и добавление (409 если имя занято, 422 если кривой URL);
+- `DELETE /api/targets/{id}` — удалить сервис вместе с историей;
+- `GET /api/status` — UP/DOWN/PENDING, последняя задержка и аптайм по каждому;
+- `GET /api/targets/{id}/history?limit=N` — последние N проверок (от 1 до 200);
+- `GET /api/audit?limit=N` — журнал, кто что добавлял и удалял.
 
-Interactive docs: `http://localhost:8000/docs`.
+Swagger открывается на http://localhost:8000/docs.
 
-## Development
+## Тесты
 
 ```bash
 pip install -r requirements-dev.txt
 pytest -q && flake8 --max-line-length=120 server client demo tests
-cd server && DATABASE_URL=sqlite+aiosqlite:///./monitor.db uvicorn app.main:app --reload
 ```
 
-## Security note
+Без Docker сервер можно запустить на SQLite:
+`cd server && DATABASE_URL=sqlite+aiosqlite:///./monitor.db uvicorn app.main:app --reload`.
 
-The server fetches the URLs users register — that is its job, and also an SSRF vector. Keep the API on a trusted
-network or set `API_TOKEN` so that only the client holding the token can add targets.
+## Про безопасность
+
+Сервер сам ходит по адресам, которые ему добавили, поэтому через него можно стучаться во внутреннюю сеть (SSRF).
+Лучше держать его в доверенной сети или задать API_TOKEN, тогда добавлять сервисы сможет только клиент с токеном.

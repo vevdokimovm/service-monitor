@@ -1,4 +1,4 @@
-"""Async SQLAlchemy engine, session factory and declarative base."""
+"""Асинхронный движок SQLAlchemy, фабрика сессий и базовый класс моделей."""
 
 from collections.abc import AsyncIterator
 
@@ -9,7 +9,7 @@ from app.core.config import settings
 
 
 class Base(DeclarativeBase):
-    """Base class for ORM models."""
+    """Базовый класс ORM-моделей."""
 
 
 engine = create_async_engine(settings.DATABASE_URL, pool_pre_ping=True)
@@ -17,14 +17,14 @@ SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def get_session() -> AsyncIterator[AsyncSession]:
-    """FastAPI dependency: one session per request."""
+    """Зависимость FastAPI: одна сессия на запрос."""
     async with SessionLocal() as session:
         yield session
 
 
 async def init_db() -> None:
-    """Create tables if they do not exist (schema is small and stable)."""
-    from app.models import orm  # noqa: F401 — register models on Base.metadata
+    """Создаёт таблицы, если их нет (схема маленькая и почти не меняется)."""
+    from app.models import orm  # noqa: F401 — импорт регистрирует модели в Base.metadata
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

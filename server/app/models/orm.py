@@ -1,4 +1,4 @@
-"""Database tables: targets, check results and the audit log."""
+"""Таблицы БД: сервисы, результаты проверок и журнал действий."""
 
 from datetime import datetime
 
@@ -9,7 +9,7 @@ from app.core.database import Base
 
 
 class Target(Base):
-    """A monitored HTTP endpoint."""
+    """Отслеживаемый HTTP-адрес."""
 
     __tablename__ = "targets"
 
@@ -22,7 +22,7 @@ class Target(Base):
 
 
 class CheckResult(Base):
-    """One probe of a target."""
+    """Одна проверка сервиса."""
 
     __tablename__ = "check_results"
 
@@ -36,7 +36,7 @@ class CheckResult(Base):
 
 
 class AuditLog(Base):
-    """Work log of the server: who did what and when."""
+    """Журнал работы сервера: кто, что и когда сделал."""
 
     __tablename__ = "audit_log"
 

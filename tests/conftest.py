@@ -1,4 +1,4 @@
-"""Test fixtures: a fresh SQLite database per test and an API client without the background loop."""
+"""Фикстуры: чистая база SQLite на каждый тест и клиент API без фонового цикла."""
 
 import os
 import sys

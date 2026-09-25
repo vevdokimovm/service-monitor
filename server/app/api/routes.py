@@ -1,4 +1,4 @@
-"""HTTP layer: parse request, call the service, return a schema."""
+"""HTTP-слой: разобрать запрос, вызвать сервис, вернуть схему."""
 
 import secrets
 
@@ -13,7 +13,7 @@ from app.services.monitor_service import MonitorService
 
 
 def require_token(x_api_token: str = Header(default="")) -> None:
-    """Checks X-API-Token when API_TOKEN is configured; constant-time comparison."""
+    """Проверяет X-API-Token, если задан API_TOKEN; сравнение за постоянное время."""
     if settings.API_TOKEN and not secrets.compare_digest(x_api_token, settings.API_TOKEN):
         raise HTTPException(status_code=401, detail="invalid or missing X-API-Token")
 

@@ -1,4 +1,4 @@
-"""Data access for targets, checks and the audit log. No business rules here."""
+"""Доступ к данным: сервисы, проверки и журнал. Бизнес-логики здесь нет."""
 
 from datetime import datetime
 
@@ -9,7 +9,7 @@ from app.models.orm import AuditLog, CheckResult, Target
 
 
 class MonitorRepository:
-    """Queries over the monitoring tables."""
+    """Запросы к таблицам мониторинга."""
 
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
@@ -52,7 +52,7 @@ class MonitorRepository:
         return list(result.scalars())
 
     async def uptime(self, target_id: int) -> tuple[int, int]:
-        """Return (checks_total, checks_up) for a target."""
+        """Возвращает (всего проверок, успешных) для сервиса."""
         result = await self.session.execute(
             select(func.count(CheckResult.id), func.count(CheckResult.id).filter(CheckResult.is_up))
             .where(CheckResult.target_id == target_id))

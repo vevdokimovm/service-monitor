@@ -1,4 +1,4 @@
-"""API behaviour: validation, uniqueness, 404, audit log."""
+"""Поведение API: валидация, уникальность имён, 404, журнал действий."""
 
 TARGET = {"name": "web", "url": "http://127.0.0.1:9101/", "interval_seconds": 5}
 
