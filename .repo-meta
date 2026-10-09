@@ -1,0 +1,3 @@
+description=Uptime monitoring of HTTP services: FastAPI + PostgreSQL server, Tkinter client, Docker Compose, CI
+topics=python,fastapi,postgresql,tkinter,uptime-monitoring,docker,ci,misis
+private=false
