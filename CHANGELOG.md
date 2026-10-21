@@ -1,5 +1,20 @@
 # CHANGELOG — Service Monitor
 
+## [1.1.0] — 2026-10-21 15:36 — Выпуск накопленной работы (5 коммит.): service monitor — FastAPI server, Tkinter client, Docker Compose, CI (MINOR)
+
+### Changed
+- feat: service monitor — FastAPI server, Tkinter client, Docker Compose, CI
+- fix: optional API token, bounded limits, per-service healthchecks in compose
+- docs: README
+- Комментарии и README на русском
+- chore: накопленные служебные правки (канон и метаданные репы)
+- `_base/` — канон base-repo v4.247.0 (раздач после прошлого выпуска: 0): доктрина «база — врач системы», кит `_base/kits/system-care/`, pre-commit останавливает только необратимое, инварианты E-04/E-05.
+
+Гейт пропущен (`--skip-gate`): провалы существовали до этого выпуска, выпуск их не вносил и не чинил — разбор в ревизии репы:
+- [FAIL] Атрибуция: в истории или настройках упомянут ассистент: 1
+
+Оценка работы: n/a — выпуск накопленной работы по стандарту `/deploy` (проход врача системы 21.10.2026); содержание коммитов не перепроверялось.
+
 > История значимого. **Append-only:** новое сверху, старое не переписывается.
 > Версии semver: MAJOR — несовместимое изменение, MINOR — новое без слома,
 > PATCH — правка.

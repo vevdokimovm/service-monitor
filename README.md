@@ -1,7 +1,7 @@
 # Service Monitor
 
 <!-- STATUS -->
-> **Сейчас:** `v1.0.0` · 2026-09-30 · ДЗ сдано и опубликовано; служебный инвариант репы заведён 30.09.2026
+> **Сейчас:** `v1.1.0` · 2026-10-21 15:36 · Выпуск накопленной работы (5 коммит.): service monitor — FastAPI server, Tkinter client, Docker Compose, CI
 > Открытое — [`ROADMAP.md`](ROADMAP.md).
 <!-- /STATUS -->
 
