@@ -1,7 +1,7 @@
 # Service Monitor
 
 <!-- STATUS -->
-> **Сейчас:** `v1.1.0` · 2026-10-21 15:36 · Выпуск накопленной работы (5 коммит.): service monitor — FastAPI server, Tkinter client, Docker Compose, CI
+> **Сейчас:** `v1.1.1` · 2026-10-22 23:55 · Журнал: точка входа §0 и §1
 > Открытое — [`ROADMAP.md`](ROADMAP.md).
 <!-- /STATUS -->
 
